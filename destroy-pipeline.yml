@@ -23,6 +23,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               backendServiceArm: 'Friday'
               backendAzureRmResourceGroupName: '$(bergname)'
               backendAzureRmStorageAccountName: '$(besaname)'
@@ -33,10 +34,12 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceNameAzureRM: 'Friday'
           - task: TerraformTaskV4@4
             displayName: destroy
             inputs:
               provider: 'azurerm'
               command: 'destroy'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceNameAzureRM: 'Friday'
