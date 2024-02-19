@@ -47,8 +47,6 @@ stages:
     displayName: plan
     jobs:
     - job: plan
-      pool: serever
-      vmImage: ubuntu-latest
       steps:
       - task: TerraformInstaller@0
         displayName: tfinstall
