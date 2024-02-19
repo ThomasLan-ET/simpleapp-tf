@@ -5,7 +5,7 @@ variables:
   bergname: 'et-practice-rbe'
   besaname: 'etrbetf'
   becontainer: 'rbe-terraform'
-  bekey: 'dev.terraform.tfstate'
+  bekey: 'sxprojecttf.terraform.tfstate'
 
 stages:
   - stage: tfdestroy 
