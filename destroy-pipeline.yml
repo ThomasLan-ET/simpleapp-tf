@@ -9,15 +9,15 @@ variables:
 
 stages:
   - stage: tfdestroy 
-    condition: succeeded('tfvalidate')
-    dependsOn: tfvalidate
     jobs:
       - job: destroy
         steps:
+
           - task: TerraformInstaller@0
             displayName: tfinstall
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformTaskV4@4
             displayName: init
             inputs:
@@ -29,6 +29,7 @@ stages:
               backendAzureRmStorageAccountName: '$(besaname)'
               backendAzureRmContainerName: '$(becontainer)'
               backendAzureRmKey: '$(bekey)'
+
           - task: TerraformTaskV4@4
             displayName: plan
             inputs:
@@ -36,6 +37,7 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceNameAzureRM: 'Friday'
+
           - task: TerraformTaskV4@4
             displayName: destroy
             inputs:
