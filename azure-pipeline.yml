@@ -1,0 +1,107 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  bergname: 'et-practice-rbe'
+  besaname: 'etrbetf'
+  becontainer: 'rbe-terraform'
+  bekey: 'dev.terraform.tfstate'
+
+stages:
+  - stage: tfvalidate
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV4@4
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              backendServiceArm: 'Friday'
+              backendAzureRmResourceGroupName: '$(bergname)'
+              backendAzureRmStorageAccountName: '$(besaname)'
+              backendAzureRmContainerName: '$(becontainer)'
+              backendAzureRmKey: '$(bekey)'
+          - task: TerraformTaskV4@4
+            displayName: validate
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+
+  - stage: plan
+    displayName: plan
+    jobs:
+    - job: plan
+      pool:
+      vmImage: ubuntu-latest
+      steps:
+      - task: TerraformInstaller@0
+        displayName: tfinstall
+        inputs:
+          terraformVersion: 'latest'
+
+      - task: TerraformTaskV4@4
+        displayName: init
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+          backendServiceArm: 'Friday'
+          backendAzureRmResourceGroupName: '$(bergname)'
+          backendAzureRmStorageAccountName: '$(besaname)'
+          backendAzureRmContainerName: '$(becontainer)'
+          backendAzureRmKey: '$(bekey)'
+
+  - stage: 
+    condition: succeeded('tfvalidate')
+    dependsOn: tfvalidate
+    jobs:
+      - job: apply
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: TerraformTaskV4@4
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              backendServiceArm: 'Friday'
+              backendAzureRmResourceGroupName: '$(bergname)'
+              backendAzureRmStorageAccountName: '$(besaname)'
+              backendAzureRmContainerName: '$(becontainer)'
+              backendAzureRmKey: '$(bekey)'
+
+          - task: TerraformTaskV4@4
+            displayName: plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              environmentServiceNameAzureRM: 'Friday'
+
+          - task: TerraformTaskV4@4
+            displayName: apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              environmentServiceNameAzureRM: 'Friday'
