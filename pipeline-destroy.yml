@@ -1,0 +1,42 @@
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  bergname: 'et-practice-rbe'
+  besaname: 'etrbetf'
+  becontainer: 'rbe-terraform'
+  bekey: 'dev.terraform.tfstate'
+
+stages:
+  - stage: tfdestroy 
+    condition: succeeded('tfvalidate')
+    dependsOn: tfvalidate
+    jobs:
+      - job: destroy
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV4@4
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'Friday'
+              backendAzureRmResourceGroupName: '$(bergname)'
+              backendAzureRmStorageAccountName: '$(besaname)'
+              backendAzureRmContainerName: '$(becontainer)'
+              backendAzureRmKey: '$(bekey)'
+          - task: TerraformTaskV4@4
+            displayName: plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'Friday'
+          - task: TerraformTaskV4@4
+            displayName: destroy
+            inputs:
+              provider: 'azurerm'
+              command: 'destroy'
+              environmentServiceNameAzureRM: 'Friday'
