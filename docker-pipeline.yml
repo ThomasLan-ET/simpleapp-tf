@@ -6,18 +6,19 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-
 stages:
   - stage: dockerbuildpush
     jobs:
       - job: dockerbuildpush
         steps:
         - task: Docker@2
+          displayName: docker login
           inputs:
             containerRegistry: 'sxregistrytfdev'
             command: 'login'
+
         - task: Docker@2
-          displayName: buildpush
+          displayName: build and push
           inputs:
             containerRegistry: 'sxregistrytfdev'
             repository: 'sxtest'
