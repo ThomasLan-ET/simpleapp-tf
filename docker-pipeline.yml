@@ -4,7 +4,7 @@ trigger:
 - develop
 
 pool:
-  name: et-agent
+  vmImage: ubuntu-latest
 
 
 stages:
@@ -14,12 +14,12 @@ stages:
         steps:
         - task: Docker@2
           inputs:
-            containerRegistry: 'sxregistrytfdev01'
+            containerRegistry: 'sxregistrytfdev'
             command: 'login'
         - task: Docker@2
           displayName: buildpush
           inputs:
-            containerRegistry: 'sxregistrytfdev01'
+            containerRegistry: 'sxregistrytfdev'
             repository: 'sxtest'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
