@@ -16,7 +16,7 @@ stages:
           displayName: Login to ACR
           inputs:
           command: login
-          containerRegistry: dockerRegistryServiceConnection1
+          containerRegistry: 'sxregistrytfdev'
         - task: Docker@2
           displayName: buildpush
           inputs:
