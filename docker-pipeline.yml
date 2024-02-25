@@ -8,9 +8,9 @@ pool:
 
 
 stages:
-  - stage: dockerbuild/dockerpush
+  - stage: dockerbuild-dockerpush
     jobs:
-      - job: dockerbuild/dockerpush
+      - job: dockerbuild-dockerpush
         steps:
         - task: Docker@2
           inputs:
