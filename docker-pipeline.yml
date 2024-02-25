@@ -14,12 +14,12 @@ stages:
         steps:
         - task: Docker@2
           inputs:
-            containerRegistry: 'sxregistrytfdev'
+            containerRegistry: 'sxregistrytfdev01'
             command: 'login'
         - task: Docker@2
           displayName: buildpush
           inputs:
-            containerRegistry: 'sxregistrytfdev'
-            repository: 'sxregistrytfdev'
+            containerRegistry: 'sxregistrytfdev01'
+            repository: 'sxtest'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
