@@ -30,6 +30,9 @@ stages:
             containerRegistry: '$(registryname)'
             repository: '$(repoimage)'
             command: 'buildAndPush'
+            tags: |
+              latest
+              $(Build.BuildId)
             Dockerfile: '**/Dockerfile'
 
   - stage: tfvalidate
@@ -137,5 +140,7 @@ stages:
               WebAppName: '$(appname)'
               DockerNamespace: '$(registryurl)'
               DockerRepository: '$(repoimage)'
-              DockerImageTag: 'latest'
+              DockerImageTag: |
+                latest
+                $(Build.BuildId)
               AppSettings: '-DOCKER_REGISTRY_SERVER_USERNAME $(dockeruser) -DOCKER_REGISTRY_SERVER_PASSWORD $(dockerpass)'
