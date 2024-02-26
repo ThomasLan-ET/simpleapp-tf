@@ -15,7 +15,7 @@ variables:
 
 stages:
 
-  - stage: docker build and push
+  - stage: buildpush
     jobs:
       - job: 
         steps:
@@ -120,7 +120,7 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceNameAzureRM: 'Friday'
 
-  - stage: deploy to dev
+  - stage: deploytodev
     displayName: deploy to dev
     jobs:
       - deployment: 
