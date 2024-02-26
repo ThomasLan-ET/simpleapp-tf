@@ -140,7 +140,5 @@ stages:
               WebAppName: '$(appname)'
               DockerNamespace: '$(registryurl)'
               DockerRepository: '$(repoimage)'
-              DockerImageTag: |
-                latest
-                $(Build.BuildId)
+              DockerImageTag: latest
               AppSettings: '-DOCKER_REGISTRY_SERVER_USERNAME $(dockeruser) -DOCKER_REGISTRY_SERVER_PASSWORD $(dockerpass)'
