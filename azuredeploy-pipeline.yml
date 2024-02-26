@@ -10,14 +10,28 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  bergname: 'et-practice-rbe'
-  besaname: 'etrbetf'
-  becontainer: 'rbe-terraform'
-  bekey: 'sxprojecttf.terraform.tfstate'
-  registryname: 'sxregistrytfdev'
-  repoimage: 'sximage'
+
+
 
 stages:
+
+  - stage: docker build and push
+    jobs:
+      - job: 
+        steps:
+        - task: Docker@2
+          displayName: docker login
+          inputs:
+            containerRegistry: '$(registryname)'
+            command: 'login'
+        - task: Docker@2
+          displayName: build and push
+          inputs:
+            containerRegistry: '$(registryname)'
+            repository: '$(repoimage)'
+            command: 'buildAndPush'
+            Dockerfile: '**/Dockerfile'
+
   - stage: tfvalidate
     jobs:
       - job: validate
@@ -106,21 +120,22 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceNameAzureRM: 'Friday'
 
-  - stage: buildpush
+  - stage: deploy to dev
+    displayName: deploy to dev
     jobs:
-      - job: dockerbuildpush
+      - deployment: 
+        pool:
+          vmImage: "ubuntu-latest"
+        environment: "Dev"
+      - job:
         steps:
-        - task: Docker@2
-          displayName: docker login
-          inputs:
-            containerRegistry: '$(registryname)'
-            command: 'login'
-
-        - task: Docker@2
-          displayName: build and push
-          inputs:
-            containerRegistry: '$(registryname)'
-            repository: '$(repoimage)'
-            command: 'buildAndPush'
-            Dockerfile: '**/Dockerfile'
-
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Friday'
+              appType: 'webAppContainer'
+              WebAppName: '$(appname)'
+              DockerNamespace: '$(registryurl)'
+              DockerRepository: '$(repoimage)'
+              DockerImageTag: 'latest'
+              AppSettings: '-DOCKER_REGISTRY_SERVER_USERNAME $(dockeruser) -DOCKER_REGISTRY_SERVER_PASSWORD $(dockerpass)'
